@@ -19,8 +19,15 @@ for line in lines:
         measurement = float(line[3])
         measurements.append(measurement)
 
-X_train = np.array(images)
-y_train = np.array(measurements)
+augmented_images, augmented_mesurements = [],[]
+for image, measurement in zip(images, measurements):
+    augmented_images.append(image)
+    augmented_mesurements.append(measurement)
+    augmented_images.append(np.fliplr(image)) # cv2.flip(image,1)
+    augmented_mesurements.append(measurement*-1.0)
+
+X_train = np.array(augmented_images)
+y_train = np.array(augmented_mesurements)
 
 from keras.models import Sequential, Model
 from keras.layers import Dense, Flatten, Lambda
