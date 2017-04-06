@@ -17,7 +17,12 @@ for line in lines:
             current_path = "data/IMG/"+filename
             image = cv2.imread(current_path)
             images.append(image)
-            measurement = float(line[3])
+            correction=0
+            if i==1:
+                correction=0.2
+            if i==2:
+                correction=-0.2
+            measurement = float(line[3])+correction
             measurements.append(measurement)
 
 augmented_images, augmented_mesurements = [],[]
