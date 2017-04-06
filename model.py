@@ -40,12 +40,14 @@ from keras.models import Sequential, Model
 from keras.layers import Dense, Flatten, Lambda
 from keras.layers.convolutional import Convolution2D
 from keras.layers import MaxPooling2D
+from keras.layers import Cropping2D
 
 epochs = 5
 
 
 model = Sequential()
 model.add(Lambda(lambda x: (x / 255.0) - 0.5, input_shape=(160,320,3)))
+model.add(Cropping2D(cropping((70,25),(0,0))))#70rowpx Top, 25 B, 0L, 0 R
 model.add(Convolution2D(6,5,5,activation='relu'))
 model.add(MaxPooling2D())
 model.add(Convolution2D(6,5,5,activation='relu'))
