@@ -11,15 +11,17 @@ with open("data/driving_log.csv") as csvfile:
 images =[]
 measurements  = []
 for line in lines:
-        source_path = line[0]
-        filename = source_path.split('/')[-1]
-        current_path = "data/IMG/"+filename
-        image = cv2.imread(current_path)
-        images.append(image)
-        measurement = float(line[3])
-        measurements.append(measurement)
+    for i in range(3):
+            source_path = line[i]
+            filename = source_path.split('/')[-1]
+            current_path = "data/IMG/"+filename
+            image = cv2.imread(current_path)
+            images.append(image)
+            measurement = float(line[3])
+            measurements.append(measurement)
 
 augmented_images, augmented_mesurements = [],[]
+
 for image, measurement in zip(images, measurements):
     augmented_images.append(image)
     augmented_mesurements.append(measurement)
@@ -34,7 +36,7 @@ from keras.layers import Dense, Flatten, Lambda
 from keras.layers.convolutional import Convolution2D
 from keras.layers import MaxPooling2D
 
-epochs = 10
+epochs = 5
 
 
 model = Sequential()
@@ -54,3 +56,4 @@ model.compile(loss='mse', optimizer = 'adam')
 model.fit(X_train, y_train, validation_split=0.2, shuffle= True, nb_epoch=epochs)
 
 model.save('model.h5')
+exit()
