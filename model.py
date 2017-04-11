@@ -8,22 +8,35 @@ from sklearn.utils import shuffle
 
 lines =[]
 
+#with open("data/driving_log.csv") as csvfile:
+#    reader = csv.reader(csvfile)
+#    for line in reader:
+#        lines.append(line)
+
 path = 'data_folders/'
+
 os.chdir(path)
 
-PATHS = ['data/driving_log.csv']
+PATHS = ['data/driving_log.csv',
+         'center_lane/driving_log.csv',
+         'recovery_from_sides/driving_log.csv',
+         'smooth_curves/driving_log.csv']
+print(PATHS)
+
+#         'curves/driving_log.csv' ]
+# the first line is the column names.
 for PATH in PATHS:
     with open(PATH) as csvfile:
         reader = csv.reader(csvfile)
         for line in reader:
             lines.append(line)
         
-        
+print("lines: ", len(lines))        
 from sklearn.model_selection import train_test_split
 train_samples, validation_samples = train_test_split(lines, test_size=0.2)
    
-print(len(lines))
-print(len(train_samples))
+
+print("train samples: ", len(train_samples))
 
 def generator(samples, batch_size=128):
     num_samples = len(samples)
@@ -36,7 +49,7 @@ def generator(samples, batch_size=128):
             angles = []
             for batch_sample in batch_samples:
                 for i in range(3):
-                    name = 'data/IMG/'+batch_sample[i].split('/')[-1]
+                    name = 'IMG/'+batch_sample[i].split('/')[-1]
                     image = cv2.imread(name)
                     images.append(image)
                     correction=0
@@ -71,7 +84,7 @@ from keras.layers import MaxPooling2D
 from keras.layers import Cropping2D
 import matplotlib.pyplot as plt
 
-epochs = 2
+epochs = 5
 
 input_shape=(160,320,3)
 print("setting model")
