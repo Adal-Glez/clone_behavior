@@ -1,17 +1,24 @@
 import csv
 import numpy as np
 import cv2
+import os
 
 import sklearn
 from sklearn.utils import shuffle
 
 lines =[]
 
-with open("data/driving_log.csv") as csvfile:
-    reader = csv.reader(csvfile)
-    for line in reader:
-        lines.append(line)
+path = 'data_folders/'
+os.chdir(path)
 
+PATHS = ['data/driving_log.csv']
+for PATH in PATHS:
+    with open(PATH) as csvfile:
+        reader = csv.reader(csvfile)
+        for line in reader:
+            lines.append(line)
+        
+        
 from sklearn.model_selection import train_test_split
 train_samples, validation_samples = train_test_split(lines, test_size=0.2)
    
@@ -34,9 +41,9 @@ def generator(samples, batch_size=128):
                     images.append(image)
                     correction=0
                     if i==1:
-                        correction=0.4
+                        correction=0.2
                     if i==2:
-                        correction=-0.4
+                        correction=-0.2
                     angle = float(batch_sample[3])+correction
                     angles.append(angle)
                     
@@ -64,7 +71,7 @@ from keras.layers import MaxPooling2D
 from keras.layers import Cropping2D
 import matplotlib.pyplot as plt
 
-epochs = 5
+epochs = 2
 
 input_shape=(160,320,3)
 print("setting model")
