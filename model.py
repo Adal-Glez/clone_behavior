@@ -8,11 +8,6 @@ from sklearn.utils import shuffle
 
 lines =[]
 
-#with open("data/driving_log.csv") as csvfile:
-#    reader = csv.reader(csvfile)
-#    for line in reader:
-#        lines.append(line)
-
 path = 'data_folders/'
 
 os.chdir(path)
@@ -23,7 +18,6 @@ PATHS = ['data/driving_log.csv',
          'smooth_curves/driving_log.csv']
 print(PATHS)
 
-#         'curves/driving_log.csv' ]
 # the first line is the column names.
 for PATH in PATHS:
     with open(PATH) as csvfile:
@@ -31,12 +25,15 @@ for PATH in PATHS:
         for line in reader:
             lines.append(line)
         
-print("lines: ", len(lines))        
-from sklearn.model_selection import train_test_split
-train_samples, validation_samples = train_test_split(lines, test_size=0.2)
-   
+print("samples: ", len(lines))  
 
+from sklearn.model_selection import train_test_split
+lines = lines[:(len(lines) // 32) * 32]
+
+print("samples: ", len(lines)) 
+train_samples, validation_samples = train_test_split(lines, test_size=0.2)
 print("train samples: ", len(train_samples))
+print("validation samples: ", len(validation_samples))
 
 def generator(samples, batch_size=128):
     num_samples = len(samples)
