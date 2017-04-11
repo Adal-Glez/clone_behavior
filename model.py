@@ -29,7 +29,6 @@ print("samples: ", len(lines))
 
 from sklearn.model_selection import train_test_split
 lines = lines[:(len(lines) // 32) * 32]
-
 print("samples: ", len(lines)) 
 train_samples, validation_samples = train_test_split(lines, test_size=0.2)
 print("train samples: ", len(train_samples))
@@ -37,6 +36,7 @@ print("validation samples: ", len(validation_samples))
 
 def generator(samples, batch_size=128):
     num_samples = len(samples)
+    correction = 0.08
     while 1: # Loop forever so the generator never terminates
         shuffle(samples)
         for offset in range(0, num_samples, batch_size):
@@ -48,20 +48,20 @@ def generator(samples, batch_size=128):
                 for i in range(3):
                     name = 'IMG/'+batch_sample[i].split('/')[-1]
                     image = cv2.imread(name)
-                    images.append(image)
-                    correction=0
-                    if i==1:
-                        correction=0.2
-                    if i==2:
-                        correction=-0.2
-                    angle = float(batch_sample[3])+correction
-                    angles.append(angle)
                     
+                    images.append(image)
+                    if i==0:
+                        angle = float(batch_sample[3])
+                    if i==1:
+                        angle = float(batch_sample[3])+correction
+                    if i==2:
+                        angle = float(batch_sample[3])-correction
+                    angles.append(angle)
+
+                    #flipped image
                     images.append(np.fliplr(image)) 
                     angles.append(angle*-1.0)
             
-
-            # trim image to only see section with road
             X_train = np.array(images)
             y_train = np.array(angles)
             yield sklearn.utils.shuffle(X_train, y_train)
@@ -105,7 +105,9 @@ print("compiling model")
 model.compile(loss='mse', optimizer = 'adam')
 print("fitting model")
 model.fit_generator(train_generator, samples_per_epoch= len(train_samples), validation_data=validation_generator, nb_val_samples=len(validation_samples), nb_epoch=epochs)
-print("save model")
 
+print("save model")
 model.save('model.h5')
+print("model saved")
+model.summary()
 exit()
