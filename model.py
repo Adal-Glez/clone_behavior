@@ -1,3 +1,8 @@
+# Adalberto Gonzalez
+# Date: April, 2017
+# behavioral cloning model: based on data collected from driving in a simulator , this model trains a deep neural netowrk to do the driving for me (us) in a simulated enviroment.
+
+
 import csv
 import numpy as np
 import cv2
@@ -11,11 +16,13 @@ lines =[]
 path = 'data_folders/'
 
 os.chdir(path)
-
+#each folder corresponds to a dataset that covers a specific part of the training 
 PATHS = ['data/driving_log.csv',
-         'center_lane/driving_log.csv',
-         'recovery_from_sides/driving_log.csv',
-         'smooth_curves/driving_log.csv']
+        'center_lane/driving_log.csv',
+        'center_lane_counter/driving_log.csv',
+        'recovery_side/driving_log.csv',
+        'smooth_curves/driving_log.csv']
+# 
 print(PATHS)
 
 # the first line is the column names.
@@ -28,15 +35,17 @@ for PATH in PATHS:
 print("samples: ", len(lines))  
 
 from sklearn.model_selection import train_test_split
+#adjsut samples quanity 
 lines = lines[:(len(lines) // 32) * 32]
-print("samples: ", len(lines)) 
+
+print("adjusted samples: ", len(lines)) 
 train_samples, validation_samples = train_test_split(lines, test_size=0.2)
 print("train samples: ", len(train_samples))
 print("validation samples: ", len(validation_samples))
 
 def generator(samples, batch_size=128):
     num_samples = len(samples)
-    correction = 0.08
+    correction = 0.2
     while 1: # Loop forever so the generator never terminates
         shuffle(samples)
         for offset in range(0, num_samples, batch_size):
@@ -50,12 +59,13 @@ def generator(samples, batch_size=128):
                     image = cv2.imread(name)
                     
                     images.append(image)
+                    #correct image from side cameras
                     if i==0:
-                        angle = float(batch_sample[3])
+                        angle = float(batch_sample[3])  #center
                     if i==1:
-                        angle = float(batch_sample[3])+correction
+                        angle = float(batch_sample[3])+correction  #left
                     if i==2:
-                        angle = float(batch_sample[3])-correction
+                        angle = float(batch_sample[3])-correction  #right
                     angles.append(angle)
 
                     #flipped image
@@ -81,7 +91,7 @@ from keras.layers import MaxPooling2D
 from keras.layers import Cropping2D
 import matplotlib.pyplot as plt
 
-epochs = 5
+epochs = 4
 
 input_shape=(160,320,3)
 print("setting model")
